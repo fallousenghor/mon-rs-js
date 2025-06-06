@@ -1,4 +1,4 @@
-import { loadView } from "../router.js";
+import { redirectTo } from "../router.js";
 import { setupLoginEvents } from "./login.controller.js";
 import { createUser, getUserByTelephone } from "../services/user.service.js";
 import { validateRegisterForm } from "../validators/validation.js";
@@ -9,7 +9,6 @@ export function setupFormEvents() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Utilisation de la fonction de validation externe
     const isValid = validateRegisterForm(form);
     if (!isValid) return;
 
@@ -30,7 +29,7 @@ export function setupFormEvents() {
       const createdUser = await createUser(user);
 
       localStorage.setItem("user", JSON.stringify(createdUser));
-      loadView("/views/pages/login.views.html", () => {
+      redirectTo("/views/pages/login.views.html", () => {
         setupLoginEvents(createdUser.telephone);
       });
     } catch (error) {
@@ -39,11 +38,12 @@ export function setupFormEvents() {
     }
   });
 
-  const goToLoginLink = document.getElementById("goToLogin");
-  goToLoginLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    loadView("/views/pages/login.views.html", () => {
-      setupLoginEvents();
+  const redirectToLoginLink = document.getElementById("redirectToLogin");
+
+  if (redirectToLoginLink) {
+    redirectToLoginLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      loadView("/views/pages/login.views.html");
     });
-  });
+  }
 }
