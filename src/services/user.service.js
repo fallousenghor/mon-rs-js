@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:3000/utilisateurs";
+import "../style.css";
 
 export async function createUser(user) {
   const res = await fetch(BASE_URL, {
