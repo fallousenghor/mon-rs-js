@@ -1,0 +1,22 @@
+{
+  "utilisateurs": [
+    {
+      "id": "96fe",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262"
+    },
+    {
+      "id": "bf7e",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+22178246326A"
+    },
+    {
+      "id": "6e8a",
+      "prenom": "",
+      "nom": "",
+      "telephone": "+33"
+    }
+  ]
+}
