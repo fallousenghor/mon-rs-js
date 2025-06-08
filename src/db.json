@@ -1,34 +1,19 @@
 {
   "utilisateurs": [
     {
-      "id": "96fe",
+      "id": "95bc",
       "prenom": "Fallou",
       "nom": "Senghor",
       "telephone": "+221782463262"
-    },
+    }
+  ],
+  "contacts": [
     {
-      "id": "6e8a",
-      "prenom": "John",
-      "nom": "Doe",
-      "telephone": "+33782463262"
-    },
-    {
-      "id": "2fce",
-      "prenom": "Fallou",
-      "nom": "Senghor",
-      "telephone": "+221782463269"
-    },
-    {
-      "id": "69ea",
-      "prenom": "Fallou",
-      "nom": "Senghor",
-      "telephone": "+221782463268"
-    },
-    {
-      "id": "be29",
-      "prenom": "Fallou",
-      "nom": "Senghor",
-      "telephone": "+221782463212"
+      "id": 1,
+      "prenom": "Awa",
+      "nom": "Diop",
+      "telephone": "+221770000000",
+      "utilisateurId": "95bc"
     }
   ]
 }

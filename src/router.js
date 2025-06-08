@@ -2,7 +2,12 @@ export function loadView(viewPath, callback) {
   fetch(viewPath)
     .then((response) => response.text())
     .then((html) => {
-      document.body.innerHTML = html;
+      const app = document.getElementById("app");
+      if (!app) {
+        console.error("Conteneur #app introuvable.");
+        return;
+      }
+      app.innerHTML = html;
       if (callback) callback();
     })
     .catch((error) => {
