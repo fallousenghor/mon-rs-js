@@ -1,8 +1,8 @@
 import { setupContactEvents } from "./contact.controller.js";
+import { setupNouvelleDiscussionEvents } from "./nouvelle.discussion.controller.js";
 
 export function setupPanelEvents() {
   document.addEventListener("click", (event) => {
-    // Vérifier si le clic est sur le bouton ou son icône
     const plusButton = event.target.closest("#plus");
     if (plusButton) {
       console.log("Bouton plus cliqué");
@@ -17,7 +17,7 @@ export function setupPanelEvents() {
           })
           .then((html) => {
             panel.innerHTML = html;
-            // Attention à ne pas perdre les événements après le changement de HTML
+            setupNouvelleDiscussionEvents();
           })
           .catch((error) => {
             console.error("Erreur de chargement :", error);
@@ -38,7 +38,7 @@ export function setupPanelEvents() {
           })
           .then((html) => {
             panel.innerHTML = html;
-            setupContactEvents(); // Initialise les événements après le chargement
+            setupContactEvents();
           })
           .catch((error) => {
             console.error("Erreur :", error);
@@ -48,7 +48,6 @@ export function setupPanelEvents() {
   });
 }
 
-// Supprimer setupNewContactEvent car il est maintenant géré via la délégation
 export function setupAccueilEvents() {
   document.addEventListener("click", (event) => {
     if (event.target.closest("#logoutBtn")) {
@@ -59,16 +58,11 @@ export function setupAccueilEvents() {
 }
 
 export function setupSidebarEvents() {
-  // ...existing code...
-
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-      // Supprimer les données de l'utilisateur du localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("contacts");
-
-      // Rediriger vers la page de connexion
       window.location.href = "/views/pages/login.views.html";
     });
   }

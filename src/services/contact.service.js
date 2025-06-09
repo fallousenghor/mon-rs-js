@@ -45,7 +45,7 @@ export async function ajouterContact(contactData) {
     return await response.json();
   } catch (error) {
     console.error("Erreur création contact:", error);
-    throw error; // Propagation de l'erreur spécifique
+    throw error;
   }
 }
 
