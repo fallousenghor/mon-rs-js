@@ -1,4 +1,28 @@
+import { setupContactEvents } from "./controllers/contact.controller.js";
+
+function checkAuth() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log("Current user:", user); // Debug
+  return user && user.id;
+}
+
 export function loadView(viewPath, callback) {
+  // Protection des routes nécessitant une authentification
+  const protectedRoutes = [
+    "nouvelle.discussion.html",
+    "newContact.view.html",
+    "contacts.views.html",
+  ];
+
+  if (
+    protectedRoutes.some((route) => viewPath.includes(route)) &&
+    !checkAuth()
+  ) {
+    alert("Vous devez être connecté pour accéder à cette page");
+    window.location.href = "/views/pages/login.views.html";
+    return;
+  }
+
   fetch(viewPath)
     .then((response) => response.text())
     .then((html) => {
@@ -8,6 +32,12 @@ export function loadView(viewPath, callback) {
         return;
       }
       app.innerHTML = html;
+
+      // Initialisation des événements selon la vue
+      if (viewPath.includes("newContact.view.html")) {
+        setupContactEvents();
+      }
+
       if (callback) callback();
     })
     .catch((error) => {
