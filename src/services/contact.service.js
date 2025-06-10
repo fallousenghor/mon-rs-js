@@ -64,7 +64,26 @@ export async function getContactsByUserId(userId) {
   }
 }
 
-export async function blockContact(userId) {
-  const res = await fetch(`http://localhost:3000/contacts?userId=${userId}`);
-  return res.slice(1);
+export async function getContacts() {
+  const res = await fetch("http://localhost:3000/contacts");
+  if (!res.ok) throw new Error("Erreur lors du chargement des contacts");
+  return await res.json();
+}
+
+export async function getContactById(id) {
+  const response = await fetch(`http://localhost:3000/contacts/${id}`);
+  if (!response.ok) throw new Error("Contact non trouvé");
+  return await response.json();
+}
+
+export async function blockContact(id) {
+  const response = await fetch(`http://localhost:3000/contacts/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ blocked: true }),
+  });
+  if (!response.ok) throw new Error("Échec du blocage du contact");
+  return await response.json();
 }

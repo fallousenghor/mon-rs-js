@@ -3,6 +3,7 @@ import { loadView } from "./router.js";
 import {
   setupPanelEvents,
   setupAccueilEvents,
+  setupContactSelection,
 } from "./controllers/whatsapp.controller.js";
 
 let user = null;
@@ -45,6 +46,7 @@ const loadWhatsAppView = () => {
 document.addEventListener("DOMContentLoaded", async () => {
   setupPanelEvents();
   setupAccueilEvents();
+  setupContactSelection();
 
   if (!user) {
     const viewExists = await checkViewExists(
