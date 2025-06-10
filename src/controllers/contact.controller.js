@@ -15,7 +15,6 @@ async function displayUserContacts() {
 
     contactsContainer.innerHTML = "";
 
-    // Ajouter le contact de l'utilisateur lui-même en premier
     const userContactHtml = `
       <div class="flex items-center py-3 hover:bg-gray-700 cursor-pointer">
         <div class="w-12 h-12 rounded-full bg-purple-500 flex-shrink-0 mr-3 overflow-hidden">
@@ -34,7 +33,6 @@ async function displayUserContacts() {
     `;
     contactsContainer.innerHTML += userContactHtml;
 
-    // Ajouter les autres contacts
     contacts.forEach((contact) => {
       const contactHtml = `
         <div class="flex items-center py-3 hover:bg-gray-700 cursor-pointer">
@@ -155,6 +153,5 @@ export function setupContactEvents() {
     }
   });
 
-  // Afficher les contacts au chargement
   displayUserContacts();
 }

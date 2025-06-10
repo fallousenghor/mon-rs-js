@@ -1,6 +1,5 @@
 <div class="bg-gray-900 text-white h-screen overflow-hidden">
   <div class="flex h-full">
-    <!-- Sidebar gauche -->
     <div
       class="w-16 sidebar-bg flex flex-col justify-between items-center py-4 space-y-6"
     >
@@ -19,18 +18,14 @@
         </div>
       </div>
       <div class="mt-auto space-y-4">
-        <div class="p-2 rounded-lg sidebar-item cursor-pointer">
-          <i class="fas fa-search text-gray-400"></i>
+        <div id="logout-container">
+          <button id="logoutBtn" class="p-2 rounded-lg sidebar-item cursor-pointer">
+          <i class="fas fa-cog text-gray-400"></i>
         </div>
         <div class="p-2 rounded-lg sidebar-item cursor-pointer">
           <i class="fas fa-user text-gray-400"></i>
         </div>
-        <div class="logout-container">
-          <button id="logoutBtn" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i>
-            Déconnexion
-          </button>
-        </div>
+        
       </div>
     </div>
 
@@ -115,20 +110,24 @@
         class="bg-gray-800 p-4 border-b border-gray-700 flex items-center justify-between"
       >
         <div class="flex items-center space-x-3">
-          <div class="avatar bg-blue-500">FS</div>
+          <div id="firstChar" class="avatar bg-blue-500" >FS</div>
           <div>
-            <h2 class="font-medium">Fallou Senghor</h2>
+            <h2 id="contactName" class="font-medium">Fallou Senghor</h2>
             <p class="text-xs text-green-400">en ligne aujourd'hui à 20:46</p>
           </div>
         </div>
         <div class="flex space-x-2">
           <button class="p-2 hover:bg-gray-700 rounded">
             <i class="fas fa-search text-gray-400"></i>
-          </button>
-          <button class="p-2 hover:bg-gray-700 rounded">
+          </button> 
+         
+            <button id="menupopup" class="p-2 hover:bg-gray-700 rounded">
             <i class="fas fa-ellipsis-v text-gray-400"></i>
           </button>
+          
+        
         </div>
+        <div id="pup" class=" absolute mt-[600px] ml-[1260px]"  ></div>
       </div>
 
       <!-- Zone des messages -->

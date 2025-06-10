@@ -2,7 +2,7 @@ import { redirectTo, loadView } from "../router.js";
 import { setupLoginEvents } from "./login.controller.js";
 import { createUser, getUserByTelephone } from "../services/user.service.js";
 import { validateRegisterForm } from "../validators/validation.js";
-import { showError } from "../utils/utils.js"; // utile pour afficher les erreurs proprement
+import { showError } from "../utils/utils.js";
 
 export function setupFormEvents() {
   const form = document.getElementById("registerForm");
@@ -13,11 +13,9 @@ export function setupFormEvents() {
   const redirectToLoginLink = document.getElementById("redirectToLogin");
   const addContactBtn = document.getElementById("addContactBtn");
 
-  // Vérification de la présence des éléments DOM
   if (!form || !prenomInput || !nomInput || !indicatifSelect || !telephoneInput)
     return;
 
-  // Gestion du submit du formulaire d'inscription
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -40,10 +38,8 @@ export function setupFormEvents() {
       const user = { prenom, nom, telephone: numeroComplet };
       const createdUser = await createUser(user);
 
-      // Enregistrement dans le localStorage
       localStorage.setItem("user", JSON.stringify(createdUser));
 
-      // Redirection vers la page de connexion
       redirectTo("/views/pages/login.views.html", () => {
         setupLoginEvents(createdUser.telephone);
       });
@@ -53,7 +49,6 @@ export function setupFormEvents() {
     }
   });
 
-  // Gestion du clic sur le bouton "Ajouter le contact"
   if (addContactBtn) {
     addContactBtn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -77,8 +72,6 @@ export function setupFormEvents() {
 
       console.log("Contact ajouté :", contact);
 
-      // Exemple : stockage local (à adapter selon ton besoin)
-      // Ici, on peut imaginer un tableau dans localStorage pour stocker plusieurs contacts
       let contacts = JSON.parse(localStorage.getItem("contacts") || "[]");
       contacts.push(contact);
       localStorage.setItem("contacts", JSON.stringify(contacts));
@@ -87,7 +80,6 @@ export function setupFormEvents() {
     });
   }
 
-  // Redirection vers la page de connexion via le lien
   if (redirectToLoginLink) {
     redirectToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();

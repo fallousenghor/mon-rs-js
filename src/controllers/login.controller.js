@@ -4,13 +4,9 @@ import { showError } from "../utils/utils.js";
 import { validatePhoneNumber } from "../validators/validators.js";
 import { getUserByTelephone } from "../services/user.service.js";
 
-// Variables pour stocker temporairement les infos de vérification
 let currentVerificationCode = null;
 let currentPhoneNumber = null;
 
-/**
- * Initialise les événements du formulaire de connexion
- */
 export function setupLoginEvents(telephoneParDefaut) {
   const form = document.getElementById("loginForm");
   const input = document.getElementById("telephone");
@@ -20,10 +16,9 @@ export function setupLoginEvents(telephoneParDefaut) {
   if (!form || !input || !selectIndicatif) return;
 
   if (telephoneParDefaut) {
-    input.value = telephoneParDefaut;
+    input.value = telephoneParDefaut.slice(4);
   }
 
-  // Soumission du formulaire de connexion
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -47,18 +42,15 @@ export function setupLoginEvents(telephoneParDefaut) {
         return;
       }
 
-      // ✅ Générer un code de vérification à 4 chiffres
       currentVerificationCode = Math.floor(
         1000 + Math.random() * 9000
       ).toString();
       currentPhoneNumber = telephone;
 
-      // ✅ Simuler l'envoi du code par SMS (à remplacer par une vraie API SMS plus tard)
       alert(`Code de vérification envoyé : ${currentVerificationCode}`);
 
-      // ✅ Charger la vue de vérification du code
       loadView("/views/pages/verification.view.html", () => {
-        setupVerificationEvents(); // Initialise le formulaire de vérification
+        setupVerificationEvents();
       });
     } catch (error) {
       console.error(error);
@@ -66,7 +58,6 @@ export function setupLoginEvents(telephoneParDefaut) {
     }
   });
 
-  // Redirection vers la page d'inscription
   if (redirectToLoginLink) {
     redirectToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();
@@ -86,7 +77,6 @@ function setupVerificationEvents() {
 
   if (!form || inputs.some((input) => !input)) return;
 
-  // Passage automatique au champ suivant
   inputs.forEach((input, index) => {
     input.addEventListener("input", () => {
       if (input.value.length === 1 && index < inputs.length - 1) {

@@ -5,7 +5,6 @@ export function setupPanelEvents() {
   document.addEventListener("click", (event) => {
     const plusButton = event.target.closest("#plus");
     if (plusButton) {
-      console.log("Bouton plus cliqué");
       const panel = document.getElementById("panel");
       if (panel) {
         fetch("/views/pages/nouvelle.discussion.html")
@@ -21,6 +20,54 @@ export function setupPanelEvents() {
           })
           .catch((error) => {
             console.error("Erreur de chargement :", error);
+          });
+      }
+    }
+
+    // const bloquer = event.target.closest("#bloquer");
+    // if (bloquer) {
+    //   const bloquer = document.getElementById("bloquer");
+    //   bloquer.style.color = "red";
+    // }
+
+    const retourbtn = event.target.closest("#retourbtn");
+    if (retourbtn) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/pages/nouvelle.discussion.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupNouvelleDiscussionEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur de chargement :", error);
+          });
+      }
+    }
+
+    const menupopup = event.target.closest("#menupopup");
+
+    if (menupopup) {
+      const pup = document.getElementById("pup");
+      if (panel) {
+        fetch("/views/components/popup.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            pup.innerHTML = html;
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
           });
       }
     }

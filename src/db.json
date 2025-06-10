@@ -1,54 +1,30 @@
 {
   "utilisateurs": [
     {
-      "id": "9fb6",
+      "id": "aa4b",
       "prenom": "Fallou",
       "nom": "Senghor",
       "telephone": "+221782463262"
-    },
-    {
-      "id": "fe64",
-      "prenom": "pape",
-      "nom": "sene",
-      "telephone": "+221777777777"
     }
   ],
   "contacts": [
     {
-      "id": "6d6e",
-      "prenom": "Fallou",
+      "id": "920b",
+      "prenom": "Abdou",
+      "nom": "Diouf",
+      "telephone": "+221777007740",
+      "userId": "aa4b",
+      "sync": true,
+      "createdAt": "2025-06-10T18:48:18.705Z"
+    },
+    {
+      "id": "7d71",
+      "prenom": "Pape",
       "nom": "Senghor",
-      "telephone": "+221782463261",
-      "userId": "9fb6",
+      "telephone": "+221777443663",
+      "userId": "aa4b",
       "sync": true,
-      "createdAt": "2025-06-09T14:47:47.570Z"
-    },
-    {
-      "id": "f4f1",
-      "prenom": "Modou",
-      "nom": "Faye",
-      "telephone": "+221776568798",
-      "userId": "9fb6",
-      "sync": true,
-      "createdAt": "2025-06-09T14:48:07.960Z"
-    },
-    {
-      "id": "71b7",
-      "prenom": "Fallou",
-      "nom": "Senghor",
-      "telephone": "+221782463262",
-      "userId": "fe64",
-      "sync": true,
-      "createdAt": "2025-06-09T14:49:10.494Z"
-    },
-    {
-      "id": "c310",
-      "prenom": "khady",
-      "nom": "diouf",
-      "telephone": "+2210000000",
-      "userId": "fe64",
-      "sync": true,
-      "createdAt": "2025-06-09T15:06:18.311Z"
+      "createdAt": "2025-06-10T18:48:47.482Z"
     }
   ]
 }

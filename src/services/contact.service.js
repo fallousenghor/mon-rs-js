@@ -6,12 +6,10 @@ export async function ajouterContact(contactData) {
       throw new Error("Utilisateur non connecté");
     }
 
-    // Validation des données
     if (!contactData.prenom || !contactData.nom || !contactData.telephone) {
       throw new Error("Données de contact incomplètes");
     }
 
-    // Vérification si le contact existe déjà
     const existingContacts = await getContactsByUserId(user.id);
     const contactExists = existingContacts.some(
       (c) => c.telephone === contactData.telephone
@@ -64,4 +62,9 @@ export async function getContactsByUserId(userId) {
     console.error("Erreur récupération contacts:", error);
     throw new Error("Impossible de récupérer les contacts");
   }
+}
+
+export async function blockContact(userId) {
+  const res = await fetch(`http://localhost:3000/contacts?userId=${userId}`);
+  return res.slice(1);
 }
