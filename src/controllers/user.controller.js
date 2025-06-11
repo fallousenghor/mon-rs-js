@@ -49,22 +49,9 @@ export function setupFormEvents() {
     }
   });
 
-  // Early return if we're not on a page with the addContactBtn
   if (addContactBtn) {
-    addContactBtn.addEventListener("click", async (e) => {
+    addContactBtn.addEventListener("click", (e) => {
       e.preventDefault();
-
-      // Get input elements again in case we're on a different page
-      const prenomInput = document.getElementById("firstName"); // Note: changed from "prenom"
-      const nomInput = document.getElementById("lastName"); // Note: changed from "nom"
-      const indicatifSelect = document.querySelector("select"); // Get the country code select
-      const telephoneInput = document.querySelector('input[type="tel"]'); // Get the telephone input
-
-      // Check if all elements exist
-      if (!prenomInput || !nomInput || !indicatifSelect || !telephoneInput) {
-        console.error("Required form elements not found");
-        return;
-      }
 
       const prenom = prenomInput.value.trim();
       const nom = nomInput.value.trim();
@@ -83,21 +70,13 @@ export function setupFormEvents() {
         createdAt: new Date().toISOString(),
       };
 
-      try {
-        let contacts = JSON.parse(localStorage.getItem("contacts") || "[]");
-        contacts.push(contact);
-        localStorage.setItem("contacts", JSON.stringify(contacts));
+      console.log("Contact ajouté :", contact);
 
-        alert("Contact ajouté avec succès !");
+      let contacts = JSON.parse(localStorage.getItem("contacts") || "[]");
+      contacts.push(contact);
+      localStorage.setItem("contacts", JSON.stringify(contacts));
 
-        // Optional: Clear form after successful addition
-        prenomInput.value = "";
-        nomInput.value = "";
-        telephoneInput.value = "";
-      } catch (error) {
-        console.error("Erreur lors de l'ajout du contact:", error);
-        alert("Une erreur est survenue lors de l'ajout du contact.");
-      }
+      alert("Contact ajouté avec succès !");
     });
   }
 

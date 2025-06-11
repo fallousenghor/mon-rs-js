@@ -16,7 +16,7 @@ export function setupPanelEvents() {
     if (plusButton) {
       const panel = document.getElementById("panel");
       if (panel) {
-        fetch("/views/pages/nouvelle.discussion.html")
+        fetch("./views/pages/nouvelle.discussion.html")
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
