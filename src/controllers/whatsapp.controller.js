@@ -142,6 +142,27 @@ export function setupPanelEvents() {
       }
     }
 
+    const backnewgroupe = event.target.closest("#backnewgroupe");
+    if (backnewgroupe) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/pages/nouvelle.discussion.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
     const paramsBtn = event.target.closest("#paramsBtn");
     if (paramsBtn) {
       const panel = document.getElementById("panel");
@@ -210,6 +231,27 @@ export function setupPanelEvents() {
       const panel = document.getElementById("panel");
       if (panel) {
         fetch("/views/components/bloquerListe.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    const newgroup = event.target.closest("#newgroup");
+    if (newgroup) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/pages/nouveau.groupe.html")
           .then((response) => {
             if (!response.ok) {
               throw new Error("Erreur lors du chargement de la page");

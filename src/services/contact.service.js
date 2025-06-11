@@ -29,13 +29,16 @@ export async function ajouterContact(contactData) {
       blocked: false,
     };
 
-    const response = await fetch("http://localhost:3000/contacts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(contact),
-    });
+    const response = await fetch(
+      "https://backend-js-server-vrai.onrender.com/contacts",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contact),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
