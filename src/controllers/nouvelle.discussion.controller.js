@@ -97,10 +97,4 @@ export async function setupNouvelleDiscussionEvents() {
       </div>
     `;
   }
-  // <button
-  //   class="block-btn bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-md text-sm"
-  //   data-contact-id="${contact.id}"
-  // >
-  //   Bloquer
-  // </button>;
 }

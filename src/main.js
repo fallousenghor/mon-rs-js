@@ -42,7 +42,6 @@ const loadWhatsAppView = () => {
   setupPanelEvents();
 };
 
-// ⚠️ Code principal dans une fonction async
 document.addEventListener("DOMContentLoaded", async () => {
   setupPanelEvents();
   setupAccueilEvents();

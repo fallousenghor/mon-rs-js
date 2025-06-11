@@ -26,6 +26,7 @@ export async function ajouterContact(contactData) {
       userId: user.id,
       sync: contactData.sync ?? true,
       createdAt: new Date().toISOString(),
+      blocked: false,
     };
 
     const response = await fetch("http://localhost:3000/contacts", {
@@ -85,5 +86,24 @@ export async function blockContact(id) {
     body: JSON.stringify({ blocked: true }),
   });
   if (!response.ok) throw new Error("Échec du blocage du contact");
+  return await response.json();
+}
+
+export async function getBlockedContacts() {
+  const response = await fetch("http://localhost:3000/contacts?blocked=true");
+  if (!response.ok)
+    throw new Error("Erreur lors du chargement des contacts bloqués");
+  return await response.json();
+}
+
+export async function unblockContact(id) {
+  const response = await fetch(`http://localhost:3000/contacts/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ blocked: false }),
+  });
+  if (!response.ok) throw new Error("Échec du déblocage du contact");
   return await response.json();
 }

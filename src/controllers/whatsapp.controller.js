@@ -4,9 +4,11 @@ import {
   getContacts,
   getContactById,
   blockContact,
+  getBlockedContacts,
+  unblockContact,
 } from "../services/contact.service.js";
 
-let selectedContactId = null; // Ajoute ceci en haut du fichier
+let selectedContactId = null;
 
 export function setupPanelEvents() {
   document.addEventListener("click", async (event) => {
@@ -30,12 +32,6 @@ export function setupPanelEvents() {
           });
       }
     }
-
-    // const bloquer = event.target.closest("#bloquer");
-    // if (bloquer) {
-    //   const bloquer = document.getElementById("bloquer");
-    //   bloquer.style.color = "red";
-    // }
 
     const retourbtn = event.target.closest("#retourbtn");
     if (retourbtn) {
@@ -68,7 +64,6 @@ export function setupPanelEvents() {
         pup.innerHTML = html;
         pup.style.display = "block";
 
-        // Gérer les clics sur les options du popup
         pup.querySelector(".info-btn")?.addEventListener("click", async () => {
           if (!selectedContactId) {
             alert("Veuillez sélectionner un contact");
@@ -77,8 +72,11 @@ export function setupPanelEvents() {
           try {
             const contact = await getContactById(selectedContactId);
             const infoHTML = `
-              <div class="contact-info-modal">
+             
+              <div id="reurnInfo" class="contact-info-modal">
+                <span  class="ml-[90%] font-bold text-red-600 cursor-pointer">x <span>
                 <h3>Informations du contact</h3>
+               
                 <p>Nom: ${contact.nom}</p>
                 <p>Prénom: ${contact.prenom}</p>
                 <p>Téléphone: ${contact.telephone}</p>
@@ -116,6 +114,13 @@ export function setupPanelEvents() {
       pup.style.display = "none";
     }
 
+    const reurnInfo = event.target.closest("#reurnInfo");
+    if (reurnInfo) {
+      document.getElementById("reurnInfo").addEventListener("click", () => {
+        reurnInfo.style.display = "none";
+      });
+    }
+
     const newContactButton = event.target.closest("#newContact");
     if (newContactButton) {
       const panel = document.getElementById("panel");
@@ -137,11 +142,124 @@ export function setupPanelEvents() {
       }
     }
 
-    // Quand un contact est sélectionné (ex: dans setupNouvelleDiscussionEvents)
-    document.getElementById(
-      "contactName"
-    ).textContent = `${selectedContact.prenom} ${selectedContact.nom}`;
-    selectedContactId = selectedContact.id; // Ajoute cette ligne
+    const paramsBtn = event.target.closest("#paramsBtn");
+    if (paramsBtn) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/components/params.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    const confback = event.target.closest("#confback");
+    if (confback) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/components/params.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    const blockback = event.target.closest("#blockback");
+    if (blockback) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/components/bloquerListe.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    const contactBlocked = event.target.closest("#contactBlocked");
+    if (contactBlocked) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/components/bloquerListe.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            setupContactEvents();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    const debloque = event.target.closest("#debloque");
+    if (debloque) {
+      document.getElementById("debloque").innerHTML = confirm(
+        "voulez vous debloquer ce contact"
+      );
+    }
+
+    const listedescontactbloquer = event.target.closest(
+      "#listedescontactbloquer"
+    );
+    if (listedescontactbloquer) {
+      const panel = document.getElementById("panel");
+      if (panel) {
+        fetch("/views/components/listecontactbloquer.html")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors du chargement de la page");
+            }
+            return response.text();
+          })
+          .then((html) => {
+            panel.innerHTML = html;
+            displayBlockedContacts();
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+      }
+    }
+
+    // document.getElementById(
+    //   "contactName"
+    // ).textContent = `${selectedContact.prenom} ${selectedContact.nom}`;
+    // selectedContactId = selectedContact.id;
   });
 }
 
@@ -169,18 +287,16 @@ export function setupContactSelection() {
   document.addEventListener("click", async (event) => {
     const contactItem = event.target.closest(".contact-item");
     if (contactItem) {
-      // Retire la sélection précédente
       document.querySelectorAll(".contact-item").forEach((item) => {
         item.classList.remove("selected");
       });
 
-      // Ajoute la sélection au contact cliqué
       contactItem.classList.add("selected");
       selectedContactId = contactItem.dataset.contactId;
 
       try {
         const contact = await getContactById(selectedContactId);
-        // Met à jour l'affichage du contact sélectionné
+
         document.getElementById(
           "contactName"
         ).textContent = `${contact.prenom} ${contact.nom}`;
@@ -189,4 +305,75 @@ export function setupContactSelection() {
       }
     }
   });
+}
+
+async function displayBlockedContacts() {
+  const blockedContactsList = document.getElementById("blocked-contacts-list");
+  if (!blockedContactsList) return;
+
+  try {
+    const blockedContacts = await getBlockedContacts();
+
+    if (blockedContacts.length === 0) {
+      blockedContactsList.innerHTML = `
+        <div class="p-4 text-center text-gray-400">
+          Aucun contact bloqué
+        </div>
+      `;
+      return;
+    }
+
+    const contactsHTML = blockedContacts
+
+      .map(
+        (contact) => `
+        <div class="flex items-center justify-between p-4 hover:bg-gray-800" data-contact-id="${contact.id}">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-white">
+              ${contact.prenom[0]}${contact.nom[0]}
+            </div>
+            <div>
+              <h3 class="text-white font-medium">${contact.prenom} ${contact.nom}</h3>
+              <p class="text-gray-400 text-sm">${contact.telephone}</p>
+            </div>
+          </div>
+         
+          <i class="fa-solid fa-xmark unblock-btn font-extrabold cursor-pointer  text-green-600"></i>
+        </div>
+      `
+      )
+      .join("");
+
+    blockedContactsList.innerHTML = contactsHTML;
+
+    document.querySelectorAll(".unblock-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const contactDiv = e.target.closest("[data-contact-id]");
+        const contactId = contactDiv.dataset.contactId;
+
+        try {
+          await unblockContact(contactId);
+          contactDiv.remove();
+
+          if (blockedContactsList.children.length === 0) {
+            blockedContactsList.innerHTML = `
+              <div class="p-4 text-center text-gray-400">
+                Aucun contact bloqué
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.error("Erreur lors du déblocage:", error);
+          alert("Erreur lors du déblocage du contact");
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Erreur lors du chargement des contacts bloqués:", error);
+    blockedContactsList.innerHTML = `
+      <div class="p-4 text-center text-red-500">
+        Erreur lors du chargement des contacts bloqués
+      </div>
+    `;
+  }
 }
