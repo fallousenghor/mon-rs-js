@@ -53,4 +53,42 @@ async function displayUserContacts() {
   }
 }
 
+export function setupSearchAndDisplay(containerId, contacts) {
+  const searchInput = document.querySelector(
+    `#${containerId} input[type="text"]`
+  );
+  const contactsContainer = document.querySelector(
+    `#${containerId} .contacts-list`
+  );
+
+  if (!searchInput || !contactsContainer) return;
+
+  const displayFilteredContacts = (filteredContacts) => {
+    contactsContainer.innerHTML = filteredContacts
+      .map(
+        (contact) => `
+      <div class="contact-item flex items-center py-3 hover:bg-gray-700 cursor-pointer" data-contact-id="${contact.id}">
+        <div class="avatar bg-purple-500 mr-3">
+          ${contact.prenom[0]}${contact.nom[0]}
+        </div>
+        <div class="flex-1">
+          <div class="text-white">${contact.prenom} ${contact.nom}</div>
+          <div class="text-gray-400 text-sm">${contact.telephone}</div>
+        </div>
+      </div>
+    `
+      )
+      .join("");
+  };
+
+  // Afficher initialement tous les contacts triés
+  displayFilteredContacts(filterAndSortContacts(contacts, "*"));
+
+  // Mettre à jour la liste à chaque frappe
+  searchInput.addEventListener("input", (e) => {
+    const filtered = filterAndSortContacts(contacts, e.target.value);
+    displayFilteredContacts(filtered);
+  });
+}
+
 export { displayUserContacts };

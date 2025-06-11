@@ -1,8 +1,62 @@
 {
   "utilisateurs": [
-  
+    {
+      "id": "e87e",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262"
+    }
   ],
   "contacts": [
-
+    {
+      "id": "e1c9",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262",
+      "userId": "f86a",
+      "sync": true,
+      "createdAt": "2025-06-11T15:24:44.605Z",
+      "blocked": false
+    },
+    {
+      "id": "aa14",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262",
+      "userId": "e87e",
+      "sync": true,
+      "createdAt": "2025-06-11T15:47:59.473Z",
+      "blocked": false
+    },
+    {
+      "id": "247f",
+      "prenom": "moustapha",
+      "nom": "seck",
+      "telephone": "+221776789809",
+      "userId": "e87e",
+      "sync": true,
+      "createdAt": "2025-06-11T15:48:18.661Z",
+      "blocked": false
+    },
+    {
+      "id": "7794",
+      "prenom": "ABACARY",
+      "nom": "Dieng",
+      "telephone": "+22176544356",
+      "userId": "e87e",
+      "sync": true,
+      "createdAt": "2025-06-11T15:48:41.786Z",
+      "blocked": false
+    },
+    {
+      "id": "6d70",
+      "prenom": "saliou",
+      "nom": "taye",
+      "telephone": "+221776789800",
+      "userId": "e87e",
+      "sync": true,
+      "createdAt": "2025-06-11T19:37:29.585Z",
+      "blocked": false
+    }
   ]
 }

@@ -1,3 +1,5 @@
+const BASE_URL = "http://localhost:3000/contacts";
+
 export async function ajouterContact(contactData) {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -29,16 +31,13 @@ export async function ajouterContact(contactData) {
       blocked: false,
     };
 
-    const response = await fetch(
-      "https://backend-js-server-vrai.onrender.com/contacts",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(contact),
-      }
-    );
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(contact),
+    });
 
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
@@ -53,35 +52,31 @@ export async function ajouterContact(contactData) {
 
 export async function getContactsByUserId(userId) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/contacts?userId=${userId}`
-    );
-
+    const response = await fetch(`${BASE_URL}?userId=${userId}`);
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+      throw new Error("Erreur lors de la récupération des contacts");
     }
-
     return await response.json();
   } catch (error) {
-    console.error("Erreur récupération contacts:", error);
-    throw new Error("Impossible de récupérer les contacts");
+    console.error("Erreur:", error);
+    throw error;
   }
 }
 
 export async function getContacts() {
-  const res = await fetch("http://localhost:3000/contacts");
+  const res = await fetch(BASE_URL);
   if (!res.ok) throw new Error("Erreur lors du chargement des contacts");
   return await res.json();
 }
 
 export async function getContactById(id) {
-  const response = await fetch(`http://localhost:3000/contacts/${id}`);
+  const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok) throw new Error("Contact non trouvé");
   return await response.json();
 }
 
 export async function blockContact(id) {
-  const response = await fetch(`http://localhost:3000/contacts/${id}`, {
+  const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -93,14 +88,14 @@ export async function blockContact(id) {
 }
 
 export async function getBlockedContacts() {
-  const response = await fetch("http://localhost:3000/contacts?blocked=true");
+  const response = await fetch(`${BASE_URL}?blocked=true`);
   if (!response.ok)
     throw new Error("Erreur lors du chargement des contacts bloqués");
   return await response.json();
 }
 
 export async function unblockContact(id) {
-  const response = await fetch(`http://localhost:3000/contacts/${id}`, {
+  const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -109,4 +104,19 @@ export async function unblockContact(id) {
   });
   if (!response.ok) throw new Error("Échec du déblocage du contact");
   return await response.json();
+}
+
+export async function searchContacts(userId, searchTerm) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}?userId=${userId}&q=${encodeURIComponent(searchTerm)}`
+    );
+    if (!response.ok) {
+      throw new Error("Erreur lors de la recherche des contacts");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur:", error);
+    throw error;
+  }
 }

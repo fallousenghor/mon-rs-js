@@ -1,4 +1,4 @@
-const BASE_URL = "https://backend-js-server-vrai.onrender.com/utilisateurs";
+const BASE_URL = "http://localhost:3000/utilisateurs";
 
 export async function createUser(user) {
   const res = await fetch(BASE_URL, {
@@ -25,3 +25,5 @@ export async function getUserByTelephone(telephone) {
   const users = await res.json();
   return users.length > 0 ? users[0] : null;
 }
+
+//  "https://backend-js-server-vrai.onrender.com/contacts",
