@@ -1,5 +1,4 @@
-<div class="bg-gray-900 text-white min-h-screen">
-  <!-- Header -->
+<div class="bg-gray-900 text-white min-h-screen flex flex-col">
   <div class="bg-gray-800 px-4 py-3 flex items-center space-x-4">
     <button id="backnewgroupe" class="text-white">
       <svg
@@ -16,59 +15,37 @@
         ></path>
       </svg>
     </button>
-    <h1 class="text-lg font-medium">Ajouter des membres au groupe</h1>
+    <h1 class="text-lg font-medium">Nouveau groupe</h1>
   </div>
 
   <div class="px-4 py-3 bg-gray-800 border-b border-gray-700">
     <div class="flex-1">
       <input
         type="text"
-        placeholder="Prénom"
-        class="bg-transparent border-0 border-b border-gray-600 outline-none text-white py-2 w-full placeholder-gray-400 focus:border-emerald-500 text-emerald-500"
-        id="firstName"
+        placeholder="Nom du groupe"
+        class="bg-transparent border-0 border-b border-gray-600 outline-none text-white py-2 w-full placeholder-gray-400 focus:border-emerald-500"
+        id="groupName"
       />
     </div>
   </div>
 
-  <!-- Contacts List -->
-  <div class="flex-1 overflow-y-auto">
-    <!-- Section # -->
-    <div
-      class="px-4 py-2 text-gray-400 text-sm font-medium bg-gray-800 sticky top-0"
-    >
-      #
-    </div>
+  <div class="px-4 py-2 bg-gray-800">
+    <p class="text-sm text-gray-400">Sélectionnez les membres (minimum 2)</p>
+  </div>
 
-    <!-- Contact with phone number -->
-    <div
-      class="contact-item px-4 py-3 flex items-center space-x-3 cursor-pointer"
+  <div
+    id="contacts-list"
+    class="flex-1 overflow-y-auto divide-y divide-gray-700"
+  >
+    <!-- Les contacts  -->
+  </div>
+
+  <div class="p-4 bg-gray-800 border-t border-gray-700">
+    <button
+      id="createGroupBtn"
+      class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200"
     >
-      <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-600">
-        <div
-          class="w-full h-full bg-gradient-to-br from-pink-400 to-blue-300 flex items-center justify-center"
-        >
-          <span class="text-white text-sm font-medium">FC</span>
-        </div>
-      </div>
-      <div class="flex-1">
-        <div class="text-white font-medium">+221764267196</div>
-        <div class="text-gray-400 text-sm">breukh...</div>
-      </div>
-    </div>
-    <div
-      class="contact-item px-4 py-3 flex items-center space-x-3 cursor-pointer"
-    >
-      <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-600">
-        <div
-          class="w-full h-full bg-gradient-to-br from-pink-400 to-blue-300 flex items-center justify-center"
-        >
-          <span class="text-white text-sm font-medium">FC</span>
-        </div>
-      </div>
-      <div class="flex-1">
-        <div class="text-white font-medium">+221764267196</div>
-        <div class="text-gray-400 text-sm">breukh...</div>
-      </div>
-    </div>
+      Créer le groupe
+    </button>
   </div>
 </div>

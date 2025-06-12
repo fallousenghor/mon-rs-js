@@ -31,6 +31,7 @@ async function loadTemplate(url, panelId = "panel", setupFunction = null) {
 
 async function showContactInfo(contact) {
   const modal = document.createElement("div");
+  modal.classList = "mod";
   modal.innerHTML = templates.contactInfo(contact);
   document.body.appendChild(modal);
 

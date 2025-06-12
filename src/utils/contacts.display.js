@@ -1,6 +1,6 @@
 import { getContactsByUserId } from "../services/contact.service.js";
 
-async function displayUserContacts() {
+export async function displayUserContacts() {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user || !user.id) return;
@@ -14,8 +14,8 @@ async function displayUserContacts() {
 
     const userContactHtml = `
       <div class="flex items-center py-3 hover:bg-gray-700 cursor-pointer">
-        <div class="w-12 h-12 rounded-full bg-purple-500 flex-shrink-0 mr-3 overflow-hidden">
-          <div class="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+        <div class="w-12 h-12 rounded-full bg-slate-600 flex-shrink-0 mr-3 overflow-hidden">
+          <div class="w-full h-full bg-gradient-to-br bg-slate-700 flex items-center justify-center text-white font-bold">
             ${user.prenom ? user.prenom.charAt(0) : ""}${
       user.nom ? user.nom.charAt(0) : ""
     }
@@ -68,7 +68,7 @@ export function setupSearchAndDisplay(containerId, contacts) {
       .map(
         (contact) => `
       <div class="contact-item flex items-center py-3 hover:bg-gray-700 cursor-pointer" data-contact-id="${contact.id}">
-        <div class="avatar bg-purple-500 mr-3">
+        <div class="avatar bg-slate-700 mr-3">
           ${contact.prenom[0]}${contact.nom[0]}
         </div>
         <div class="flex-1">
@@ -81,14 +81,12 @@ export function setupSearchAndDisplay(containerId, contacts) {
       .join("");
   };
 
-  // Afficher initialement tous les contacts triés
   displayFilteredContacts(filterAndSortContacts(contacts, "*"));
 
-  // Mettre à jour la liste à chaque frappe
   searchInput.addEventListener("input", (e) => {
     const filtered = filterAndSortContacts(contacts, e.target.value);
     displayFilteredContacts(filtered);
   });
 }
 
-export { displayUserContacts };
+// export default { displayUserContacts };

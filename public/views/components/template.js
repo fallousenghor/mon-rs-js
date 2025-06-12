@@ -1,6 +1,6 @@
 export const templates = {
   contactInfo: (contact) => `
-    <div id="reurnInfo" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div id="reurnInfo" class="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-96 overflow-hidden transform transition-all">
         <div class="relative bg-green-600 p-6">
           <div class="absolute top-4 right-4">
