@@ -20,7 +20,9 @@ export async function setupNouvelleDiscussionEvents() {
     allContacts = await getContactsByUserId(currentUser.id);
 
     const renderContacts = (contacts) => {
-      contactsContainer.innerHTML = contacts
+      const nonBlockedContacts = contacts.filter((contact) => !contact.blocked);
+
+      contactsContainer.innerHTML = nonBlockedContacts
         .map(
           (contact) => `
           <div class="contact-item flex items-center justify-between py-3 px-4 cursor-pointer hover:bg-gray-800"

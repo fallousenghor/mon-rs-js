@@ -1,23 +1,32 @@
 const BASE_URL = "http://localhost:3000/contacts";
 
+async function fetchData(url, options = {}) {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
+  }
+  return await response.json();
+}
+
+function getCurrentUser() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user?.id) throw new Error("Utilisateur non connecté");
+  return user;
+}
+
+function validateContactData(contactData) {
+  if (!contactData?.prenom || !contactData?.nom || !contactData?.telephone) {
+    throw new Error("Données de contact incomplètes");
+  }
+}
+
 export async function ajouterContact(contactData) {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user || !user.id) {
-      throw new Error("Utilisateur non connecté");
-    }
-
-    if (!contactData.prenom || !contactData.nom || !contactData.telephone) {
-      throw new Error("Données de contact incomplètes");
-    }
+    const user = getCurrentUser();
+    validateContactData(contactData);
 
     const existingContacts = await getContactsByUserId(user.id);
-    const contactExists = existingContacts.some(
-      (c) => c.telephone === contactData.telephone
-    );
-
-    if (contactExists) {
+    if (existingContacts.some((c) => c.telephone === contactData.telephone)) {
       throw new Error("Ce contact existe déjà");
     }
 
@@ -31,19 +40,11 @@ export async function ajouterContact(contactData) {
       blocked: false,
     };
 
-    const response = await fetch(BASE_URL, {
+    return await fetchData(BASE_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(contact),
     });
-
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-
-    return await response.json();
   } catch (error) {
     console.error("Erreur création contact:", error);
     throw error;
@@ -52,11 +53,8 @@ export async function ajouterContact(contactData) {
 
 export async function getContactsByUserId(userId) {
   try {
-    const response = await fetch(`${BASE_URL}?userId=${userId}`);
-    if (!response.ok) {
-      throw new Error("Erreur lors de la récupération des contacts");
-    }
-    return await response.json();
+    const contacts = await fetchData(`${BASE_URL}?userId=${userId}`);
+    return contacts.filter((contact) => !contact.blocked);
   } catch (error) {
     console.error("Erreur:", error);
     throw error;
@@ -64,59 +62,35 @@ export async function getContactsByUserId(userId) {
 }
 
 export async function getContacts() {
-  const res = await fetch(BASE_URL);
-  if (!res.ok) throw new Error("Erreur lors du chargement des contacts");
-  return await res.json();
+  return await fetchData(BASE_URL);
 }
 
 export async function getContactById(id) {
-  const response = await fetch(`${BASE_URL}/${id}`);
-  if (!response.ok) throw new Error("Contact non trouvé");
-  return await response.json();
+  return await fetchData(`${BASE_URL}/${id}`);
 }
 
 export async function blockContact(id) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
+  return await fetchData(`${BASE_URL}/${id}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ blocked: true }),
   });
-  if (!response.ok) throw new Error("Échec du blocage du contact");
-  return await response.json();
 }
 
 export async function getBlockedContacts() {
-  const response = await fetch(`${BASE_URL}?blocked=true`);
-  if (!response.ok)
-    throw new Error("Erreur lors du chargement des contacts bloqués");
-  return await response.json();
+  return await fetchData(`${BASE_URL}?blocked=true`);
 }
 
-export async function unblockContact(id) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
+export async function unblockContact(contactId) {
+  return await fetchData(`${BASE_URL}/${contactId}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ blocked: false }),
   });
-  if (!response.ok) throw new Error("Échec du déblocage du contact");
-  return await response.json();
 }
 
 export async function searchContacts(userId, searchTerm) {
-  try {
-    const response = await fetch(
-      `${BASE_URL}?userId=${userId}&q=${encodeURIComponent(searchTerm)}`
-    );
-    if (!response.ok) {
-      throw new Error("Erreur lors de la recherche des contacts");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Erreur:", error);
-    throw error;
-  }
+  return await fetchData(
+    `${BASE_URL}?userId=${userId}&q=${encodeURIComponent(searchTerm)}`
+  );
 }

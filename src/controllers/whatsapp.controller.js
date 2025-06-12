@@ -7,56 +7,72 @@ import {
   getBlockedContacts,
   unblockContact,
 } from "../services/contact.service.js";
+import { updateContactsList } from "../utils/utils.js";
+import { templates } from "../../public/views/components/template.js";
 
 let selectedContactId = null;
 
-export function setupPanelEvents() {
-  document.addEventListener("click", async (event) => {
-    const plusButton = event.target.closest("#plus");
-    if (plusButton) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("./views/pages/nouvelle.discussion.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupNouvelleDiscussionEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur de chargement :", error);
-          });
-      }
-    }
+async function loadTemplate(url, panelId = "panel", setupFunction = null) {
+  try {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
 
-    const retourbtn = event.target.closest("#retourbtn");
-    if (retourbtn) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/pages/nouvelle.discussion.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupNouvelleDiscussionEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur de chargement :", error);
-          });
+    const response = await fetch(url);
+    const html = await response.text();
+    panel.innerHTML = html;
+
+    if (setupFunction) {
+      setupFunction();
+    }
+  } catch (error) {
+    console.error(`Erreur de chargement (${url}):`, error);
+  }
+}
+
+async function showContactInfo(contact) {
+  const modal = document.createElement("div");
+  modal.innerHTML = templates.contactInfo(contact);
+  document.body.appendChild(modal);
+
+  modal.querySelector(".close-btn").addEventListener("click", () => {
+    modal.remove();
+  });
+}
+
+export async function setupPanelEvents() {
+  document.addEventListener("click", async (event) => {
+    const pup = document.getElementById("pup");
+
+    const buttonHandlers = {
+      "#plus": "/views/pages/nouvelle.discussion.html",
+      "#retourbtn": "/views/pages/nouvelle.discussion.html",
+      "#newContact": "/views/pages/newContact.view.html",
+      "#backnewgroupe": "/views/pages/nouvelle.discussion.html",
+      "#paramsBtn": "/views/components/params.html",
+      "#confback": "/views/components/params.html",
+      "#blockback": "/views/components/bloquerListe.html",
+      "#contactBlocked": "/views/components/bloquerListe.html",
+      "#newgroup": "/views/pages/nouveau.groupe.html",
+      "#listedescontactbloquer": "/views/components/listecontactbloquer.html",
+    };
+
+    for (const [selector, url] of Object.entries(buttonHandlers)) {
+      if (event.target.closest(selector)) {
+        const setupFn =
+          selector === "#plus" || selector === "#retourbtn"
+            ? setupNouvelleDiscussionEvents
+            : setupContactEvents;
+
+        if (selector === "#listedescontactbloquer") {
+          await loadTemplate(url, "panel", displayBlockedContacts);
+        } else {
+          await loadTemplate(url, "panel", setupFn);
+        }
+        return;
       }
     }
 
     const menupopup = event.target.closest("#menupopup");
-    const pup = document.getElementById("pup");
-
     if (menupopup) {
       try {
         const response = await fetch("/views/components/popup.html");
@@ -71,21 +87,7 @@ export function setupPanelEvents() {
           }
           try {
             const contact = await getContactById(selectedContactId);
-            const infoHTML = `
-             
-              <div id="reurnInfo" class="contact-info-modal">
-                <span  class="ml-[90%] font-bold text-red-600 cursor-pointer">x <span>
-                <h3>Informations du contact</h3>
-               
-                <p>Nom: ${contact.nom}</p>
-                <p>Prénom: ${contact.prenom}</p>
-                <p>Téléphone: ${contact.telephone}</p>
-                <p>Statut: ${contact.blocked ? "Bloqué" : "Actif"}</p>
-              </div>
-            `;
-            const modal = document.createElement("div");
-            modal.innerHTML = infoHTML;
-            document.body.appendChild(modal);
+            showContactInfo(contact);
             pup.style.display = "none";
           } catch (error) {
             alert("Erreur lors de la récupération des informations");
@@ -100,6 +102,10 @@ export function setupPanelEvents() {
           }
           try {
             await blockContact(selectedContactId);
+            const contactElement = document.querySelector(
+              `[data-contact-id="${selectedContactId}"]`
+            );
+            if (contactElement) contactElement.remove();
             alert("Contact bloqué avec succès");
             pup.style.display = "none";
           } catch (error) {
@@ -114,194 +120,17 @@ export function setupPanelEvents() {
       pup.style.display = "none";
     }
 
-    const reurnInfo = event.target.closest("#reurnInfo");
-    if (reurnInfo) {
-      document.getElementById("reurnInfo").addEventListener("click", () => {
-        reurnInfo.style.display = "none";
-      });
-    }
-
-    const newContactButton = event.target.closest("#newContact");
-    if (newContactButton) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/pages/newContact.view.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const backnewgroupe = event.target.closest("#backnewgroupe");
-    if (backnewgroupe) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/pages/nouvelle.discussion.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const paramsBtn = event.target.closest("#paramsBtn");
-    if (paramsBtn) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/components/params.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const confback = event.target.closest("#confback");
-    if (confback) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/components/params.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const blockback = event.target.closest("#blockback");
-    if (blockback) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/components/bloquerListe.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const contactBlocked = event.target.closest("#contactBlocked");
-    if (contactBlocked) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/components/bloquerListe.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
-    const newgroup = event.target.closest("#newgroup");
-    if (newgroup) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/pages/nouveau.groupe.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            setupContactEvents();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
-      }
-    }
-
     const debloque = event.target.closest("#debloque");
     if (debloque) {
-      document.getElementById("debloque").innerHTML = confirm(
-        "voulez vous debloquer ce contact"
-      );
-    }
-
-    const listedescontactbloquer = event.target.closest(
-      "#listedescontactbloquer"
-    );
-    if (listedescontactbloquer) {
-      const panel = document.getElementById("panel");
-      if (panel) {
-        fetch("/views/components/listecontactbloquer.html")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors du chargement de la page");
-            }
-            return response.text();
-          })
-          .then((html) => {
-            panel.innerHTML = html;
-            displayBlockedContacts();
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-          });
+      const confirmed = confirm("Voulez-vous débloquer ce contact ?");
+      if (confirmed) {
       }
     }
 
-    // document.getElementById(
-    //   "contactName"
-    // ).textContent = `${selectedContact.prenom} ${selectedContact.nom}`;
-    // selectedContactId = selectedContact.id;
+    const reurnInfo = event.target.closest("#reurnInfo .close-btn");
+    if (reurnInfo) {
+      reurnInfo.closest("#reurnInfo").remove();
+    }
   });
 }
 
@@ -329,16 +158,14 @@ export function setupContactSelection() {
   document.addEventListener("click", async (event) => {
     const contactItem = event.target.closest(".contact-item");
     if (contactItem) {
-      document.querySelectorAll(".contact-item").forEach((item) => {
-        item.classList.remove("selected");
-      });
-
+      document
+        .querySelectorAll(".contact-item")
+        .forEach((item) => item.classList.remove("selected"));
       contactItem.classList.add("selected");
       selectedContactId = contactItem.dataset.contactId;
 
       try {
         const contact = await getContactById(selectedContactId);
-
         document.getElementById(
           "contactName"
         ).textContent = `${contact.prenom} ${contact.nom}`;
@@ -355,67 +182,37 @@ async function displayBlockedContacts() {
 
   try {
     const blockedContacts = await getBlockedContacts();
+    blockedContactsList.innerHTML =
+      templates.blockedContactsList(blockedContacts);
 
-    if (blockedContacts.length === 0) {
-      blockedContactsList.innerHTML = `
-        <div class="p-4 text-center text-gray-400">
-          Aucun contact bloqué
-        </div>
-      `;
-      return;
-    }
+    blockedContactsList.addEventListener("click", async (e) => {
+      const unblockBtn = e.target.closest(".unblock-btn");
+      if (!unblockBtn) return;
 
-    const contactsHTML = blockedContacts
+      const contactItem = unblockBtn.closest(".blocked-contact-item");
+      const contactId = contactItem?.dataset.contactId;
+      if (!contactId) return;
 
-      .map(
-        (contact) => `
-        <div class="flex items-center justify-between p-4 hover:bg-gray-800" data-contact-id="${contact.id}">
-          <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-white">
-              ${contact.prenom[0]}${contact.nom[0]}
-            </div>
-            <div>
-              <h3 class="text-white font-medium">${contact.prenom} ${contact.nom}</h3>
-              <p class="text-gray-400 text-sm">${contact.telephone}</p>
-            </div>
-          </div>
-         
-          <i class="fa-solid fa-xmark unblock-btn font-extrabold cursor-pointer  text-green-600"></i>
-        </div>
-      `
-      )
-      .join("");
+      try {
+        await unblockContact(contactId);
+        contactItem.remove();
 
-    blockedContactsList.innerHTML = contactsHTML;
-
-    document.querySelectorAll(".unblock-btn").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        const contactDiv = e.target.closest("[data-contact-id]");
-        const contactId = contactDiv.dataset.contactId;
-
-        try {
-          await unblockContact(contactId);
-          contactDiv.remove();
-
-          if (blockedContactsList.children.length === 0) {
-            blockedContactsList.innerHTML = `
-              <div class="p-4 text-center text-gray-400">
-                Aucun contact bloqué
-              </div>
-            `;
-          }
-        } catch (error) {
-          console.error("Erreur lors du déblocage:", error);
-          alert("Erreur lors du déblocage du contact");
+        const currentUser = JSON.parse(localStorage.getItem("user"));
+        if (currentUser?.id) {
+          const contacts = await getContacts(currentUser.id);
+          updateContactsList(contacts);
         }
-      });
+
+        if (blockedContactsList.children.length === 0) {
+          blockedContactsList.innerHTML = templates.blockedContactsList([]);
+        }
+      } catch (error) {
+        console.error("Erreur lors du déblocage:", error);
+        alert("Erreur lors du déblocage du contact");
+      }
     });
   } catch (error) {
     console.error("Erreur lors du chargement des contacts bloqués:", error);
-    blockedContactsList.innerHTML = `
-      <div class="p-4 text-center text-red-500">
-        Erreur lors du chargement des contacts bloqués
-      </div>
-    `;
+    blockedContactsList.innerHTML = templates.blockedContactsError;
   }
 }
