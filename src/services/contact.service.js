@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000/contacts";
+const BASE_URL = "https://backend-js-server-vrai.onrender.com/contacts";
 
 async function fetchData(url, options = {}) {
   const response = await fetch(url, options);
