@@ -11,6 +11,12 @@
       "prenom": "Fallou",
       "nom": "Senghor",
       "telephone": "+221782463210"
+    },
+    {
+      "id": "81f2",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463223"
     }
   ],
   "contacts": [
@@ -83,6 +89,16 @@
       "sync": true,
       "createdAt": "2025-06-12T07:44:57.785Z",
       "blocked": false
+    },
+    {
+      "id": "65b5",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262",
+      "userId": "81f2",
+      "sync": true,
+      "createdAt": "2025-06-12T11:37:53.984Z",
+      "blocked": true
     }
   ],
   "groupes": []
