@@ -23,6 +23,7 @@ export async function getUserByTelephone(telephone) {
   }
 
   const users = await res.json();
+  console.log(users);
   return users.length > 0 ? users[0] : null;
 }
 
