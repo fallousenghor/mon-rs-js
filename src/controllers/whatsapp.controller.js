@@ -24,7 +24,10 @@ async function loadTemplate(url, panelId = "panel", setupFunction = null) {
     panel.innerHTML = html;
 
     if (setupFunction) {
-      setupFunction();
+      // Use requestAnimationFrame to ensure DOM elements are fully parsed and available
+      requestAnimationFrame(() => {
+        setupFunction();
+      });
     }
   } catch (error) {
     console.error(`Erreur de chargement (${url}):`, error);
@@ -236,41 +239,6 @@ async function displayGroupes() {
     groupesList.innerHTML = "<p>Erreur lors du chargement des groupes.</p>";
   }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const groupesBtn = document.getElementById("groupesBtn");
-  if (!groupesBtn) {
-    console.error("L'élément #groupesBtn est introuvable dans le DOM.");
-    return;
-  }
-
-  groupesBtn.addEventListener("click", function () {
-    const conversationsContainer = document.querySelector(".overflow-y-auto");
-    if (conversationsContainer) {
-      conversationsContainer.classList.add("hidden");
-    }
-
-    const groupesContainer = document.getElementById("groupes-container");
-    if (groupesContainer) {
-      groupesContainer.classList.remove("hidden");
-    }
-
-    displayGroupes();
-
-    document
-      .querySelectorAll(".flex.border-b.border-gray-700 button")
-      .forEach((btn) => {
-        btn.classList.remove(
-          "text-green-500",
-          "border-b-2",
-          "border-green-500"
-        );
-        btn.classList.add("text-gray-400");
-      });
-    this.classList.add("text-green-500", "border-b-2", "border-green-500");
-    this.classList.remove("text-gray-400");
-  });
-});
 
 window.addMemberToGroup = async (groupId, memberId) => {
   try {
