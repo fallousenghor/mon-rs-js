@@ -1,5 +1,6 @@
 import { setupContactEvents } from "./contact.controller.js";
 import { setupNouvelleDiscussionEvents } from "./nouvelle.discussion.controller.js";
+import { setupGroupeEvents } from "./groupe.controller.js";
 import {
   getContacts,
   getContactById,
@@ -7,6 +8,7 @@ import {
   getBlockedContacts,
   unblockContact,
 } from "../services/contact.service.js";
+import { getGroupes, saveGroupes } from "../services/groupe.service.js";
 import { updateContactsList } from "../utils/utils.js";
 import { templates } from "../../public/views/components/template.js";
 
@@ -55,20 +57,23 @@ export async function setupPanelEvents() {
       "#contactBlocked": "/views/components/bloquerListe.html",
       "#newgroup": "/views/pages/nouveau.groupe.html",
       "#listedescontactbloquer": "/views/components/listecontactbloquer.html",
+      "#groupesBtn": "/views/components/groupes.html",
     };
 
     for (const [selector, url] of Object.entries(buttonHandlers)) {
       if (event.target.closest(selector)) {
-        const setupFn =
-          selector === "#plus" || selector === "#retourbtn"
-            ? setupNouvelleDiscussionEvents
-            : setupContactEvents;
-
-        if (selector === "#listedescontactbloquer") {
-          await loadTemplate(url, "panel", displayBlockedContacts);
+        let setupFn;
+        if (selector === "#plus" || selector === "#retourbtn") {
+          setupFn = setupNouvelleDiscussionEvents;
+        } else if (selector === "#newgroup") {
+          setupFn = setupGroupeEvents;
+        } else if (selector === "#groupesBtn") {
+          setupFn = displayGroupes;
         } else {
-          await loadTemplate(url, "panel", setupFn);
+          setupFn = setupContactEvents;
         }
+
+        await loadTemplate(url, "panel", setupFn);
         return;
       }
     }
@@ -217,3 +222,237 @@ async function displayBlockedContacts() {
     blockedContactsList.innerHTML = templates.blockedContactsError;
   }
 }
+
+async function displayGroupes() {
+  const groupesList = document.getElementById("groupes-list");
+  if (!groupesList) return;
+
+  try {
+    const groupes = await getGroupes();
+    const activeGroupes = groupes.filter((g) => !g.closed);
+    groupesList.innerHTML = templates.groupesList(activeGroupes);
+  } catch (error) {
+    console.error("Erreur lors du chargement des groupes:", error);
+    groupesList.innerHTML = "<p>Erreur lors du chargement des groupes.</p>";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const groupesBtn = document.getElementById("groupesBtn");
+  if (!groupesBtn) {
+    console.error("L'élément #groupesBtn est introuvable dans le DOM.");
+    return;
+  }
+
+  groupesBtn.addEventListener("click", function () {
+    const conversationsContainer = document.querySelector(".overflow-y-auto");
+    if (conversationsContainer) {
+      conversationsContainer.classList.add("hidden");
+    }
+
+    const groupesContainer = document.getElementById("groupes-container");
+    if (groupesContainer) {
+      groupesContainer.classList.remove("hidden");
+    }
+
+    displayGroupes();
+
+    document
+      .querySelectorAll(".flex.border-b.border-gray-700 button")
+      .forEach((btn) => {
+        btn.classList.remove(
+          "text-green-500",
+          "border-b-2",
+          "border-green-500"
+        );
+        btn.classList.add("text-gray-400");
+      });
+    this.classList.add("text-green-500", "border-b-2", "border-green-500");
+    this.classList.remove("text-gray-400");
+  });
+});
+
+window.addMemberToGroup = async (groupId, memberId) => {
+  try {
+    const groupes = await getGroupes();
+    const groupe = groupes.find((g) => g.id === groupId);
+
+    if (!groupe) {
+      alert("Groupe introuvable !");
+      return;
+    }
+
+    if (groupe.membres.includes(memberId)) {
+      alert("Le membre est déjà dans le groupe !");
+      return;
+    }
+
+    groupe.membres.push(memberId);
+    await saveGroupes(groupes);
+    displayGroupes();
+    alert("Membre ajouté avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du membre :", error);
+    alert("Erreur lors de l'ajout du membre !");
+  }
+};
+
+window.removeMemberFromGroup = async (groupId) => {
+  const memberId = prompt("Entrez l'ID du membre à retirer :");
+  if (!memberId) return;
+
+  try {
+    const groupes = await getGroupes();
+    const groupe = groupes.find((g) => g.id === groupId);
+    if (!groupe) {
+      alert("Groupe introuvable !");
+      return;
+    }
+
+    if (!groupe.membres.includes(memberId)) {
+      alert("Le membre n'est pas dans le groupe !");
+      return;
+    }
+
+    groupe.membres = groupe.membres.filter((m) => m !== memberId);
+    await saveGroupes(groupes);
+    displayGroupes();
+    alert("Membre retiré avec succès !");
+  } catch (error) {
+    console.error("Erreur lors du retrait du membre :", error);
+    alert("Erreur lors du retrait du membre !");
+  }
+};
+
+window.closeGroup = async (groupId) => {
+  if (!confirm("Êtes-vous sûr de vouloir fermer ce groupe ?")) return;
+
+  try {
+    const groupes = await getGroupes();
+    const groupe = groupes.find((g) => g.id === groupId);
+
+    if (!groupe) {
+      alert("Groupe introuvable !");
+      return;
+    }
+
+    groupe.closed = true;
+
+    await saveGroupes(groupes);
+
+    displayGroupes();
+    alert("Groupe fermé avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de la fermeture du groupe :", error);
+    alert("Erreur lors de la fermeture du groupe !");
+  }
+};
+
+window.showContactsToAdd = async (groupId) => {
+  const contactsListContainer = document.getElementById(
+    `contacts-list-${groupId}`
+  );
+  if (!contactsListContainer) return;
+
+  try {
+    const contacts = await getContacts();
+    const groupes = await getGroupes();
+    const groupe = groupes.find((g) => g.id === groupId);
+
+    if (!groupe) {
+      alert("Groupe introuvable !");
+      return;
+    }
+
+    const availableContacts = contacts.filter(
+      (contact) => !groupe.membres.includes(contact.id)
+    );
+
+    if (availableContacts.length === 0) {
+      contactsListContainer.innerHTML = `<p class="text-gray-500">Aucun contact disponible</p>`;
+      return;
+    }
+
+    // Génère la liste des contacts
+    contactsListContainer.innerHTML = availableContacts
+      .map(
+        (contact) => `
+      <div class="flex items-center justify-between p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+            ${contact.prenom[0]}${contact.nom[0]}
+          </div>
+          <div>
+            <h3 class="text-gray-900 dark:text-white font-medium">${contact.prenom} ${contact.nom}</h3>
+            <p class="text-sm text-gray-500">${contact.telephone}</p>
+          </div>
+        </div>
+        <button 
+          class="text-sm text-green-500 hover:text-green-400"
+          onclick="addMemberToGroup('${groupId}', '${contact.id}')"
+        >
+          Ajouter
+        </button>
+      </div>
+    `
+      )
+      .join("");
+
+    contactsListContainer.classList.remove("hidden");
+  } catch (error) {
+    console.error("Erreur lors du chargement des contacts :", error);
+    contactsListContainer.innerHTML = `<p class="text-red-500">Erreur lors du chargement des contacts</p>`;
+  }
+};
+
+window.showMembersToRemove = async (groupId) => {
+  const contactsListContainer = document.getElementById(
+    `contacts-list-${groupId}`
+  );
+  if (!contactsListContainer) return;
+
+  try {
+    const groupes = await getGroupes();
+    const groupe = groupes.find((g) => g.id === groupId);
+
+    if (!groupe) {
+      alert("Groupe introuvable !");
+      return;
+    }
+
+    if (groupe.membres.length === 0) {
+      contactsListContainer.innerHTML = `<p class="text-gray-500">Aucun membre à retirer</p>`;
+      return;
+    }
+
+    contactsListContainer.innerHTML = await Promise.all(
+      groupe.membres.map(async (memberId) => {
+        const contact = await getContactById(memberId);
+        return `
+        <div class="flex items-center justify-between p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+              ${contact.prenom[0]}${contact.nom[0]}
+            </div>
+            <div>
+              <h3 class="text-gray-900 dark:text-white font-medium">${contact.prenom} ${contact.nom}</h3>
+              <p class="text-sm text-gray-500">${contact.telephone}</p>
+            </div>
+          </div>
+          <button 
+            class="text-sm text-red-500 hover:text-red-400"
+            onclick="removeMemberFromGroup('${groupId}', '${contact.id}')"
+          >
+            Retirer
+          </button>
+        </div>
+      `;
+      })
+    ).join("");
+
+    contactsListContainer.classList.remove("hidden");
+  } catch (error) {
+    console.error("Erreur lors du chargement des membres :", error);
+    contactsListContainer.innerHTML = `<p class="text-red-500">Erreur lors du chargement des membres</p>`;
+  }
+};

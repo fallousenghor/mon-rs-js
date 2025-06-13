@@ -94,4 +94,55 @@ export const templates = {
   },
 
   blockedContactsError: `<div class="p-4 text-center text-red-500">Erreur lors du chargement des contacts bloqués</div>`,
+
+  groupesList: (groupes) => {
+    if (groupes.length === 0) {
+      return `
+        <div class="text-center p-8">
+          <p class="text-gray-500">Aucun groupe trouvé</p>
+        </div>`;
+    }
+
+    return `
+      <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+        ${groupes
+          .map(
+            (g) => `
+          <div class="groupe-item border-b border-gray-200 dark:border-gray-700 last:border-none" data-group-id="${
+            g.id
+          }">
+            <div class="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+              <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
+                  <i class="fas fa-users text-white group-icon"></i>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-900 dark:text-white">${
+                    g.nom
+                  }</h3>
+                  <p class="text-sm text-gray-500">
+                    <i class="fas fa-user-friends text-gray-400"></i> ${
+                      g.membres.length
+                    } ${g.membres.length > 1 ? "membres" : "membre"}
+                  </p>
+                </div>
+              </div>
+              <button 
+                class="text-sm text-blue-500 hover:text-blue-400"
+                onclick="showContactsToAdd('${g.id}')"
+              >
+                Ajouter des membres
+              </button>
+            </div>
+            <div id="contacts-list-${
+              g.id
+            }" class="hidden p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+              <!-- La liste des contacts sera injectée ici -->
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>`;
+  },
 };

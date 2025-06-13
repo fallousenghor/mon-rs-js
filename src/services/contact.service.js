@@ -1,4 +1,5 @@
 const BASE_URL = "https://backend-js-server-vrai.onrender.com/contacts";
+// const BASE_URL = "http://localhost:3000/contacts";
 
 async function fetchData(url, options = {}) {
   const response = await fetch(url, options);
@@ -62,7 +63,9 @@ export async function getContactsByUserId(userId) {
 }
 
 export async function getContacts() {
-  return await fetchData(BASE_URL);
+  const response = await fetch("/src/db.json");
+  const data = await response.json();
+  return data.contacts || [];
 }
 
 export async function getContactById(id) {

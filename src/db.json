@@ -1,9 +1,57 @@
 {
-  "utilisateurs": [
-   
-  ],
+  "utilisateurs": [],
   "contacts": [
- 
+    {
+      "id": "205d",
+      "prenom": "Fallou",
+      "nom": "Senghor",
+      "telephone": "+221782463262",
+      "userId": "81f2",
+      "sync": true,
+      "createdAt": "2025-06-12T23:42:18.375Z",
+      "blocked": false
+    },
+    {
+      "id": "cbc2",
+      "prenom": "Modou",
+      "nom": "Faye",
+      "telephone": "+221878899898",
+      "userId": "81f2",
+      "sync": true,
+      "createdAt": "2025-06-13T00:13:01.260Z",
+      "blocked": false
+    },
+    {
+      "id": "58b0",
+      "prenom": "khouss",
+      "nom": "ngom",
+      "telephone": "+221334325465",
+      "userId": "81f2",
+      "sync": true,
+      "createdAt": "2025-06-13T00:13:29.120Z",
+      "blocked": true
+    },
+    {
+      "id": "cb37",
+      "prenom": "mbaye",
+      "nom": "diagne",
+      "telephone": "+221782463211",
+      "userId": "81f2",
+      "sync": true,
+      "createdAt": "2025-06-13T01:09:47.589Z",
+      "blocked": false
+    }
   ],
-  "groupes": []
+  "groupes": [
+    {
+      "id": "c5d0",
+      "nom": "famille",
+      "adminId": "81f2",
+      "membres": [
+        "cb37",
+        "205d"
+      ],
+      "createdAt": "2025-06-13T01:10:02.409Z"
+    }
+  ]
 }
