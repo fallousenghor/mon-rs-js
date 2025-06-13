@@ -72,6 +72,8 @@ export async function setupPanelEvents() {
           setupFn = setupGroupeEvents;
         } else if (selector === "#groupesBtn") {
           setupFn = displayGroupes;
+        } else if (selector === "#listedescontactbloquer") {
+          setupFn = displayBlockedContacts;
         } else {
           setupFn = setupContactEvents;
         }
@@ -194,6 +196,12 @@ async function displayBlockedContacts() {
     blockedContactsList.innerHTML =
       templates.blockedContactsList(blockedContacts);
 
+    // Mettre à jour le compteur de contacts bloqués
+    const nombreBloquer = document.getElementById("nombreBloquer");
+    if (nombreBloquer) {
+      nombreBloquer.textContent = blockedContacts.length;
+    }
+
     blockedContactsList.addEventListener("click", async (e) => {
       const unblockBtn = e.target.closest(".unblock-btn");
       if (!unblockBtn) return;
@@ -214,6 +222,13 @@ async function displayBlockedContacts() {
 
         if (blockedContactsList.children.length === 0) {
           blockedContactsList.innerHTML = templates.blockedContactsList([]);
+        }
+
+        // Mettre à jour le compteur après déblocage
+        const updatedBlockedContacts = await getBlockedContacts();
+        const nombreBloquer = document.getElementById("nombreBloquer");
+        if (nombreBloquer) {
+          nombreBloquer.textContent = updatedBlockedContacts.length;
         }
       } catch (error) {
         console.error("Erreur lors du déblocage:", error);
