@@ -45,6 +45,18 @@ async function showContactInfo(contact) {
   });
 }
 
+async function updateBlockedContactsCounter() {
+  try {
+    const blockedContacts = await getBlockedContacts();
+    const nombreBloquer = document.getElementById("nombreBloquer");
+    if (nombreBloquer) {
+      nombreBloquer.textContent = blockedContacts.length;
+    }
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du compteur:", error);
+  }
+}
+
 export async function setupPanelEvents() {
   document.addEventListener("click", async (event) => {
     const pup = document.getElementById("pup");
@@ -74,6 +86,11 @@ export async function setupPanelEvents() {
           setupFn = displayGroupes;
         } else if (selector === "#listedescontactbloquer") {
           setupFn = displayBlockedContacts;
+        } else if (selector === "#contactBlocked") {
+          setupFn = async () => {
+            await displayBlockedContacts();
+            await updateBlockedContactsCounter();
+          };
         } else {
           setupFn = setupContactEvents;
         }
@@ -117,6 +134,10 @@ export async function setupPanelEvents() {
               `[data-contact-id="${selectedContactId}"]`
             );
             if (contactElement) contactElement.remove();
+            
+            // Mettre à jour le compteur de contacts bloqués
+            await updateBlockedContactsCounter();
+            
             alert("Contact bloqué avec succès");
             pup.style.display = "none";
           } catch (error) {
@@ -197,10 +218,7 @@ async function displayBlockedContacts() {
       templates.blockedContactsList(blockedContacts);
 
     // Mettre à jour le compteur de contacts bloqués
-    const nombreBloquer = document.getElementById("nombreBloquer");
-    if (nombreBloquer) {
-      nombreBloquer.textContent = blockedContacts.length;
-    }
+    await updateBlockedContactsCounter();
 
     blockedContactsList.addEventListener("click", async (e) => {
       const unblockBtn = e.target.closest(".unblock-btn");
@@ -225,11 +243,7 @@ async function displayBlockedContacts() {
         }
 
         // Mettre à jour le compteur après déblocage
-        const updatedBlockedContacts = await getBlockedContacts();
-        const nombreBloquer = document.getElementById("nombreBloquer");
-        if (nombreBloquer) {
-          nombreBloquer.textContent = updatedBlockedContacts.length;
-        }
+        await updateBlockedContactsCounter();
       } catch (error) {
         console.error("Erreur lors du déblocage:", error);
         alert("Erreur lors du déblocage du contact");
